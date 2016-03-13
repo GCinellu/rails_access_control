@@ -1,0 +1,43 @@
+<div class="row">
+  <div class="col-xs-12">
+    <p id="notice"><%= notice %></p>
+
+    <h1>Listing Wishes</h1>
+
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Team</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Impact on business</th>
+        <th>Time required</th>
+        <th>Ease of development</th>
+        <th>Deadline</th>
+        <th colspan="3"></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% @wishes.each do |wish| %>
+          <tr>
+            <td><%= wish.team %></td>
+            <td><%= wish.title %></td>
+            <td><%= wish.description %></td>
+            <td><%= wish.impact_on_business %></td>
+            <td><%= wish.time_required %></td>
+            <td><%= wish.ease_of_development %></td>
+            <td><%= wish.deadline %></td>
+            <td><%= link_to 'Show', wish %></td>
+            <td><%= link_to 'Edit', edit_wish_path(wish) %></td>
+            <td><%= link_to 'Destroy', wish, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+
+    <br>
+
+    <%= link_to 'New Wish', new_company_wish_path %>
+  </div>
+</div>

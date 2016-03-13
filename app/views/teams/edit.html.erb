@@ -1,0 +1,6 @@
+<h1>Editing Team</h1>
+
+<%= render 'form' %>
+
+<%= link_to 'Show', company_teams_path(current_user.company, @team) %> |
+<%= link_to 'Back', company_teams_path(current_user.company) %>

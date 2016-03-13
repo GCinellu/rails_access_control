@@ -1,0 +1,41 @@
+<div class="row">
+  <div class="col-xs-8">
+    <%= form_for(@company) do |f| %>
+      <%= fields_for :user, @company.users.new do |user_field| %>
+        <div class="form-group">
+          <%= user_field.label 'Your Email' %><br>
+          <%= user_field.text_field :email, class: 'form-control' %>
+        </div>
+        <div class="form-group">
+          <%= user_field.label :password %><br>
+          <%= user_field.password_field :password, class: 'form-control' %>
+        </div>
+      <% end %>
+      <% if @company.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@company.errors.count, "error") %> prohibited this company from being saved:</h2>
+
+          <ul>
+            <% @company.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= f.label 'Company Name' %><br>
+        <%= f.text_field :name, class: 'form-control' %>
+      </div>
+      <div class="form-group">
+        <%= f.label 'Company Description' %><br>
+        <%= f.text_area :description, class: 'form-control' %>
+      </div>
+      <div class="actions">
+        <%= f.submit 'Create', class: 'btn btn-success' %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+

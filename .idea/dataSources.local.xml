@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="Rails it_bank: development" uuid="f7279de5-b2b7-4e77-b6fb-d8289aeaf68f">
+      <schema-pattern>it_bank_development.*</schema-pattern>
+      <default-schemas>it_bank_development.*</default-schemas>
+    </data-source>
+    <data-source name="Rails it_bank: test" uuid="83ca5ff3-d1ac-48e4-9e0b-c7d311b5e01a" />
+    <data-source name="Rails it_bank: production" uuid="40ab7031-d4be-4683-9c28-337e2a2b73fa">
+      <user-name>it_bank</user-name>
+      <user-password>df96df8fdf97df8adfefdfe4dffcdff1df8ddfe3dffedff5dfe8dfebdfe4dfe1dff5dfeedfebdffedfebdfe8dfebdff9dfefdff5dffadfebdff9dff9dffddfe5dff8dfeedf8ddff7df8adf8fdf94</user-password>
+    </data-source>
+  </component>
+</project>

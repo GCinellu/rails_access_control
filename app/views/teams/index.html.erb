@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Teams (<%=  @teams.count  %>)</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <% if current_user.is_admin? %>
+        <th>Company</th>
+      <% end %>
+      <th>Name</th>
+      <th>Department</th>
+      <th>Description</th>
+      <th>Available credit</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @teams.each do |team| %>
+      <tr>
+        <% if current_user.is_admin? %>
+          <td>Company</td>
+        <% end %>
+        <td><%= team.name %></td>
+        <td><%= team.department.name %></td>
+        <td><%= team.description %></td>
+        <td><%= team.available_credit %></td>
+        <td><%= link_to 'Show', company_team_path(current_user.company, team) %></td>
+        <td><%= link_to 'Edit', edit_company_team_path(current_user.company, team) %></td>
+        <td><%= link_to 'Destroy', company_team_path(current_user.company, team), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Team', new_company_team_path %>

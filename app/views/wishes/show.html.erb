@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Team:</strong>
+  <%= @wish.team %>
+</p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @wish.title %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @wish.description %>
+</p>
+
+<p>
+  <strong>Impact on business:</strong>
+  <%= @wish.impact_on_business %>
+</p>
+
+<p>
+  <strong>Time required:</strong>
+  <%= @wish.time_required %>
+</p>
+
+<p>
+  <strong>Ease of development:</strong>
+  <%= @wish.ease_of_development %>
+</p>
+
+<p>
+  <strong>Deadline:</strong>
+  <%= @wish.deadline %>
+</p>
+
+<%= link_to 'Edit', edit_wish_path(@wish) %> |
+<%= link_to 'Back', wishes_path %>

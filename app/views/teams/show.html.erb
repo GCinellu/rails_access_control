@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @team.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @team.description %>
+</p>
+
+<p>
+  <strong>Available credit:</strong>
+  <%= @team.available_credit %>
+</p>
+
+<%= link_to 'Edit', edit_company_team_path(current_user.company, @team) %> |
+<%= link_to 'Back', company_teams_path(current_user.company) %>
