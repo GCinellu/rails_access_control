@@ -1,15 +1,17 @@
 <div class="row">
   <div class="col-xs-8">
     <%= form_for(@company) do |f| %>
-      <%= fields_for :user, @company.users.new do |user_field| %>
-        <div class="form-group">
-          <%= user_field.label 'Your Email' %><br>
-          <%= user_field.text_field :email, class: 'form-control' %>
-        </div>
-        <div class="form-group">
-          <%= user_field.label :password %><br>
-          <%= user_field.password_field :password, class: 'form-control' %>
-        </div>
+      <% unless current_user %>
+        <%= fields_for :user, @company.users.new do |user_field| %>
+          <div class="form-group">
+            <%= user_field.label 'Your Email' %><br>
+            <%= user_field.text_field :email, class: 'form-control' %>
+          </div>
+          <div class="form-group">
+            <%= user_field.label :password %><br>
+            <%= user_field.password_field :password, class: 'form-control' %>
+          </div>
+        <% end %>
       <% end %>
       <% if @company.errors.any? %>
         <div id="error_explanation">

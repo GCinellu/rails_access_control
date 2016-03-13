@@ -1,7 +1,7 @@
 class Company < ActiveRecord::Base
-  has_many :users
+  has_many :users, dependent: :destroy
 
-  has_many :departments
+  has_many :departments, dependent: :destroy
   has_many :teams,  through: :departments
   has_many :wishes, through: :departments
 

@@ -1,7 +1,6 @@
 class CompaniesController < ApplicationController
   before_action :set_company, only: [:edit, :update, :destroy]
   before_action :authenticate_user!, except: [:new, :create]
-  before_action :auth_administrator!, only: [:index, :edit]
 
   # GET /companies
   # GET /companies.json
@@ -23,8 +22,9 @@ class CompaniesController < ApplicationController
 
   # GET /companies/1/edit
   def edit
-    raise current_user.roles.include?('owner').inspect and current_user.company == @company
-    redirect_to new_user_session_path unless current_user.roles.include?('owner') and current_user.company == @company
+    unless current_user.is_admin? or (current_user.roles.include?('owner') and current_user.company == @company)
+      redirect_to new_user_session_path
+    end
   end
 
   # POST /companies
@@ -52,6 +52,10 @@ class CompaniesController < ApplicationController
   # PATCH/PUT /companies/1
   # PATCH/PUT /companies/1.json
   def update
+    unless current_user.roles.include?('administrator') or (current_user.roles.include?('owner') and current_user.company == @company)
+      redirect_to new_user_session_path
+    end
+
     respond_to do |format|
       if @company.update(company_params)
         format.html { redirect_to @company, notice: 'Company was successfully updated.' }
@@ -66,6 +70,10 @@ class CompaniesController < ApplicationController
   # DELETE /companies/1
   # DELETE /companies/1.json
   def destroy
+    unless current_user.roles.include?('administrator') or (current_user.roles.include?('owner') and current_user.company == @company)
+      redirect_to new_user_session_path
+    end
+
     @company.destroy
     respond_to do |format|
       format.html { redirect_to companies_url, notice: 'Company was successfully destroyed.' }
