@@ -2,12 +2,14 @@ require 'rails_helper'
 
 RSpec.describe CompaniesController, type: :controller do
 
+  ####### TODO Ensure authentication for owner testing works
+
   # This should return the minimal set of attributes required to create a valid
   # Company. As you add validations to Company, be sure to
   # adjust the attributes here as well.
-  let(:energy_super) {
-    FactoryGirl.build(:energy_super)
-  }
+  # let(:energy_super) {
+  #   FactoryGirl.build(:energy_super)
+  # }
 
   # let(:energy_super_modified) {
   #   FactoryGirl.create(:energy_super)
@@ -41,6 +43,10 @@ RSpec.describe CompaniesController, type: :controller do
     FactoryGirl.build(:energy_super_front_end)
   }
 
+  let(:front_end_attributes) {
+    { email: 'frontend2@itbank.com', password: 'password' }
+  }
+
   let(:owner_attributes) {
     { email: 'owner2@itbank.com', password: 'password' }
   }
@@ -58,11 +64,8 @@ RSpec.describe CompaniesController, type: :controller do
     end
 
     context "when authenticated as owner" do
+      login_owner
       it "should redirect to sign in" do
-        @request.env["devise.mapping"] = Devise.mappings[:user]
-        user = owner
-        sign_in :owner, user
-
         get :index
         expect(response).to redirect_to(new_user_session_path)
       end
@@ -80,8 +83,9 @@ RSpec.describe CompaniesController, type: :controller do
   describe "GET #show" do
     context "without authentication" do
       it "should not assigns the requested company as @company" do
-        company = Company.create company_attributes
+        company = FactoryGirl.create(:energy_super, name: 'Test Company')
         get :show, {:id => company.id}
+
         expect(assigns(:company)).to eq(nil)
         expect(response).to redirect_to(new_user_session_path)
       end
@@ -98,16 +102,16 @@ RSpec.describe CompaniesController, type: :controller do
   describe "GET #edit" do
     context "without being authenticated" do
       it "should not assigns the requested company as @company" do
-        company = Company.create company_attributes
+        company = FactoryGirl.create(:energy_super, name: 'Test Company')
         get :edit, {:id => company.id}
         expect(response).to redirect_to(new_user_session_path)
       end
     end
 
     context "without having an authentication level high enough" do
+      login_front_end
       it "should not assigns the requested company as @company" do
-        company = Company.create company_attributes
-        get :edit, {:id => company.id}
+        get :edit, {:id => @company.id}
         expect(response).to redirect_to(new_user_session_path)
       end
     end
@@ -115,22 +119,17 @@ RSpec.describe CompaniesController, type: :controller do
     context "being an administrator" do
       login_administrator
       it "should assigns the requested company as @company" do
-        company = Company.create company_attributes
+        company = FactoryGirl.create(:energy_super, name: 'Test Company')
         get :edit, {:id => company.id}
         expect(response).to have_http_status(200)
       end
     end
 
     context "being the owner of the company" do
+      login_owner
       it "should assigns the requested company as @company" do
-        company = Company.create company_attributes
-
-        company_owner = User.new owner
-        company_owner.company = company
-        company_owner.save
-
-        get :edit, {:id => company_owner.company.id}
-        expect(assigns(:company)).to eq(company_owner.company)
+        get :edit, {:id => @company.id}
+        expect(response).to have_http_status(200)
       end
     end
   end
@@ -198,58 +197,39 @@ RSpec.describe CompaniesController, type: :controller do
     login_administrator
     context "when authenticated as Administrtor" do
       it "should update the record" do
-        company = Company.create company_attributes
+        company = FactoryGirl.create(:energy_super, name: 'Test Company')
         put :update, {:id => company.id, :company => company_attributes_modified }, cookies
         expect(response).to redirect_to(company)
       end
     end
 
-    context "with valid params" do
-      let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
-      }
+    context "when authenticated as Owner" do
+      login_owner
+      context "with valid params" do
+        it "updates the requested company" do
+          put :update, {:id => @company.to_param, :company => company_attributes_modified}
+          @company.reload
 
-      it "updates the requested company as owner" do
-        @request.env["devise.mapping"] = Devise.mappings[:owner]
-        sign_in :owner, owner
+          expect(response).to redirect_to(@company)
+          expect(response).to have_http_status(302)
+        end
 
-        company = Company.create! company_attributes
-        put :update, {:id => company.to_param, :company => company_attributes_modified}
-        company.reload
-
-        expect(response).to redirect_to(company)
-        expect(response).to have_http_status(302)
-      end
-
-      it "assigns the requested company as @company" do
-        @request.env["devise.mapping"] = Devise.mappings[:owner]
-        sign_in :owner, owner
-
-        company = Company.create! company_attributes
-
-        put :update, {:id => company.to_param, :company => company_attributes_modified}
-        expect(assigns(:company)).to eq(company)
+        it "assigns the requested company as @company" do
+          put :update, {:id => @company.to_param, :company => company_attributes_modified}
+          expect(assigns(:company)).to eq(@company)
+        end
       end
     end
 
     context "with invalid params" do
+      login_owner
       it "should not assigns the company as @company" do
-        @request.env["devise.mapping"] = Devise.mappings[:owner]
-        sign_in :owner, owner
-
-        company = Company.create! company_attributes
-
-        put :update, {:id => company.to_param, :company => company_attributes_invalid}
-        expect(assigns(:company)).to eq(company)
+        put :update, {:id => @company.to_param, :company => company_attributes_invalid}
+        expect(assigns(:company)).to eq(@company)
       end
 
       it "re-renders the 'edit' template" do
-        @request.env["devise.mapping"] = Devise.mappings[:owner]
-        sign_in :owner, owner
-
-        company = Company.create! company_attributes
-
-        put :update, {:id => company.to_param, :company => company_attributes_invalid}
+        put :update, {:id => @company.to_param, :company => company_attributes_invalid}
         expect(response).to render_template("edit")
       end
     end
@@ -257,23 +237,26 @@ RSpec.describe CompaniesController, type: :controller do
 
   describe "DELETE #destroy" do
     context "as Onwer" do
+      login_owner
       it "destroys the requested company" do
-        @request.env["devise.mapping"] = Devise.mappings[:owner]
-        sign_in :owner, owner
-
-        company = Company.create! company_attributes
-        puts session.inspect
-
         expect {
-          delete :destroy, {:id => company.to_param}
+          delete :destroy, {:id => @company.to_param}
         }.to change(Company, :count).by(-1)
+      end
+    end
+
+    context "as Developer" do
+      login_front_end
+      it "destroys the requested company" do
+        delete :destroy, {:id => @company.to_param}
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
 
     context "as Administrator" do
       login_administrator
       it "destroys the requested company" do
-        company = Company.create! company_attributes
+        company = FactoryGirl.create(:energy_super, name: 'Test Company')
 
         expect {
           delete :destroy, {:id => company.to_param}
@@ -281,14 +264,12 @@ RSpec.describe CompaniesController, type: :controller do
       end
 
       it "redirects to the companies list" do
-        company = Company.create! company_attributes
+        company = FactoryGirl.create(:energy_super, name: 'Test Company')
         delete :destroy, {:id => company.to_param}
 
         expect(response).to redirect_to(companies_url)
       end
     end
-
-
   end
 
 end

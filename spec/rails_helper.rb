@@ -9,7 +9,6 @@ require 'rspec/rails'
 
 require 'devise'
 require 'support/controller_macros'
-require 'support/controller_helpers'
 require 'factory_girl_rails'
 
 # Add additional requires below this line. Rails is not loaded until this point!
