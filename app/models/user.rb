@@ -14,7 +14,11 @@ class User < ActiveRecord::Base
     ['common', 'administrator', 'manager', 'developer', 'marketeer', 'customer_care', 'owner']
   end
 
-  def is_admin?
+  def can_access_resource?(company)
+    self.is_administrator? or (self.roles.include?('owner') and self.company == company)
+  end
+
+  def is_administrator?
     self.roles.include?('administrator')
   end
 

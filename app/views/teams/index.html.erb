@@ -5,7 +5,7 @@
 <table class="table">
   <thead>
     <tr>
-      <% if current_user.is_admin? %>
+      <% if current_user.is_administrator? %>
         <th>Company</th>
       <% end %>
       <th>Name</th>
@@ -19,7 +19,7 @@
   <tbody>
     <% @teams.each do |team| %>
       <tr>
-        <% if current_user.is_admin? %>
+        <% if current_user.is_administrator? %>
           <td>Company</td>
         <% end %>
         <td><%= team.name %></td>

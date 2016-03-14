@@ -5,7 +5,7 @@ class CompaniesController < ApplicationController
   # GET /companies
   # GET /companies.json
   def index
-    redirect_to new_user_session_path unless current_user.roles.include?('administrator')
+    return redirect_to new_user_session_path unless current_user.is_administrator?
     @companies = Company.all
   end
 
@@ -22,9 +22,7 @@ class CompaniesController < ApplicationController
 
   # GET /companies/1/edit
   def edit
-    unless current_user.is_admin? or (current_user.roles.include?('owner') and current_user.company == @company)
-      redirect_to new_user_session_path
-    end
+    redirect_to new_user_session_path unless current_user.can_access_resource? @company
   end
 
   # POST /companies
@@ -52,9 +50,7 @@ class CompaniesController < ApplicationController
   # PATCH/PUT /companies/1
   # PATCH/PUT /companies/1.json
   def update
-    unless current_user.roles.include?('administrator') or (current_user.roles.include?('owner') and current_user.company == @company)
-      redirect_to new_user_session_path
-    end
+    return redirect_to new_user_session_path unless current_user.can_access_resource? @company
 
     respond_to do |format|
       if @company.update(company_params)
@@ -70,14 +66,17 @@ class CompaniesController < ApplicationController
   # DELETE /companies/1
   # DELETE /companies/1.json
   def destroy
-    unless current_user.roles.include?('administrator') or (current_user.roles.include?('owner') and current_user.company == @company)
-      redirect_to new_user_session_path
-    end
+    return redirect_to new_user_session_path unless current_user.can_access_resource? @company
 
     @company.destroy
     respond_to do |format|
-      format.html { redirect_to companies_url, notice: 'Company was successfully destroyed.' }
-      format.json { head :no_content }
+      if current_user.is_administrator?
+        format.html { redirect_to companies_path, notice: 'Company was successfully destroyed.' }
+        format.json { head :no_content }
+      else
+        format.html { redirect_to root_path, notice: 'Company was successfully destroyed.' }
+        format.json { head :no_content }
+      end
     end
   end
 
@@ -94,9 +93,5 @@ class CompaniesController < ApplicationController
 
   def user_params
     params.require(:user).permit(:email, :password)
-  end
-
-  def auth_administrator!
-    redirect_to new_user_session_path unless current_user.roles.include?('administrator')
   end
 end

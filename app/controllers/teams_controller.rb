@@ -5,7 +5,7 @@ class TeamsController < ApplicationController
   # GET /teams
   # GET /teams.json
   def index
-    @teams = current_user.is_admin? ? Team.all : current_user.company.teams
+    @teams = current_user.is_administrator? ? Team.all : current_user.company.teams
   end
 
   # GET /teams/1
