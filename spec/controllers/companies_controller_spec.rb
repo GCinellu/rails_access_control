@@ -7,14 +7,6 @@ RSpec.describe CompaniesController, type: :controller do
   # This should return the minimal set of attributes required to create a valid
   # Company. As you add validations to Company, be sure to
   # adjust the attributes here as well.
-  # let(:energy_super) {
-  #   FactoryGirl.build(:energy_super)
-  # }
-
-  # let(:energy_super_modified) {
-  #   FactoryGirl.create(:energy_super)
-  # }
-
   let(:company_attributes) {
     FactoryGirl.build(:energy_super, name: 'General Company').attributes
   }
@@ -25,26 +17,6 @@ RSpec.describe CompaniesController, type: :controller do
 
   let(:company_attributes_modified) {
     FactoryGirl.build(:energy_super, name: 'Energy Super modified').attributes
-  }
-
-  let(:administrator) {
-    FactoryGirl.build(:administrator)
-  }
-
-  let(:administrator_attributes) {
-    FactoryGirl.build(:administrator).attributes
-  }
-
-  let(:owner) {
-    FactoryGirl.build(:energy_super_owner).attributes
-  }
-
-  let(:front_end) {
-    FactoryGirl.build(:energy_super_front_end)
-  }
-
-  let(:front_end_attributes) {
-    { email: 'frontend2@itbank.com', password: 'password' }
   }
 
   let(:owner_attributes) {
@@ -119,7 +91,7 @@ RSpec.describe CompaniesController, type: :controller do
     context "being an administrator" do
       login_administrator
       it "should assigns the requested company as @company" do
-        company = FactoryGirl.create(:energy_super, name: 'Test Company')
+        company = FactoryGirl.create(:energy_super, name: 'Random Company')
         get :edit, {:id => company.id}
         expect(response).to have_http_status(200)
       end
@@ -197,7 +169,7 @@ RSpec.describe CompaniesController, type: :controller do
     login_administrator
     context "when authenticated as Administrtor" do
       it "should update the record" do
-        company = FactoryGirl.create(:energy_super, name: 'Test Company')
+        company = FactoryGirl.create(:energy_super, name: 'Update Company')
         put :update, {:id => company.id, :company => company_attributes_modified }, cookies
         expect(response).to redirect_to(company)
       end
@@ -254,19 +226,20 @@ RSpec.describe CompaniesController, type: :controller do
     end
 
     context "as Administrator" do
-      login_administrator
-      it "destroys the requested company" do
-        company = FactoryGirl.create(:energy_super, name: 'Test Company')
+      before(:each) do
+        @company = FactoryGirl.create(:energy_super, name: 'Delete Company Administrator')
+      end
 
+      login_administrator
+
+      it "destroys the requested company" do
         expect {
-          delete :destroy, {:id => company.to_param}
+          delete :destroy, {:id => @company.to_param}
         }.to change(Company, :count).by(-1)
       end
 
       it "redirects to the companies list" do
-        company = FactoryGirl.create(:energy_super, name: 'Test Company')
-        delete :destroy, {:id => company.to_param}
-
+        delete :destroy, {:id => @company.to_param}
         expect(response).to redirect_to(companies_url)
       end
     end

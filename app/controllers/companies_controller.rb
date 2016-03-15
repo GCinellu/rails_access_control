@@ -22,7 +22,7 @@ class CompaniesController < ApplicationController
 
   # GET /companies/1/edit
   def edit
-    redirect_to new_user_session_path unless current_user.can_access_resource? @company
+    return redirect_to new_user_session_path unless (current_user.is_owner?(@company) or current_user.is_administrator?)
   end
 
   # POST /companies
@@ -50,7 +50,7 @@ class CompaniesController < ApplicationController
   # PATCH/PUT /companies/1
   # PATCH/PUT /companies/1.json
   def update
-    return redirect_to new_user_session_path unless current_user.can_access_resource? @company
+    return redirect_to new_user_session_path unless (current_user.is_owner?(@company) or current_user.is_administrator?)
 
     respond_to do |format|
       if @company.update(company_params)
@@ -66,7 +66,7 @@ class CompaniesController < ApplicationController
   # DELETE /companies/1
   # DELETE /companies/1.json
   def destroy
-    return redirect_to new_user_session_path unless current_user.can_access_resource? @company
+    return redirect_to new_user_session_path unless (current_user.is_owner?(@company) or current_user.is_administrator?)
 
     @company.destroy
     respond_to do |format|
