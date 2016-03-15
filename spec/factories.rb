@@ -52,6 +52,11 @@ FactoryGirl.define do
       roles %W{common owner}
     end
 
+    trait :is_manager do
+      email 'manager@itbank.com'
+      roles %W{common manager}
+    end
+
     trait :is_front_end do
       email 'front_end@itbank.com'
       roles %W{common developer}
@@ -59,6 +64,7 @@ FactoryGirl.define do
 
     factory :administrator,          traits: [:is_administrator]
     factory :energy_super_owner,     traits: [:is_owner]
+    factory :energy_super_manager,   traits: [:is_manager]
     factory :energy_super_front_end, traits: [:is_front_end]
   end
 
