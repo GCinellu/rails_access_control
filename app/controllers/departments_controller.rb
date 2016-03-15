@@ -1,24 +1,35 @@
 class DepartmentsController < ApplicationController
   before_action :set_department, only: [:show, :edit, :update, :destroy]
+  before_action :set_company, only: [:new, :edit]
+  before_action :authenticate_user!
 
   # GET /departments
   # GET /departments.json
   def index
+    return redirect_to new_user_session_path unless current_user.is_administrator?
     @departments = Department.all
   end
 
   # GET /departments/1
   # GET /departments/1.json
   def show
+    return redirect_to new_user_session_path unless current_user.is_within_company?(@department.company)
   end
 
   # GET /departments/new
   def new
+    if current_user.company != @company and not current_user.is_administrator?
+      sign_out current_user
+      return redirect_to new_user_session_path
+    end
+
+    return redirect_to company_path(@company) unless current_user.is_owner_or_admin?(@company)
     @department = Department.new
   end
 
   # GET /departments/1/edit
   def edit
+    return redirect_to company_path(@department.company) unless current_user.is_owner_or_admin?(@department.company)
   end
 
   # POST /departments
@@ -65,6 +76,10 @@ class DepartmentsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_department
       @department = Department.find(params[:id])
+    end
+
+    def set_company
+      @company = Company.find(params[:company_id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
